@@ -3,14 +3,12 @@
 #include <cmath> // for round
 using namespace std;
 #include <algorithm>
-#include <iomanip>
-#include <sstream>
-
 
 /*  Web sources:
     for input output overloading i was inspired from: https://coding-champ.com/tutorials/c-plus-plus/operator-overloading-for-input-and-output
     for overflow handeling (to pass the student's test): https://stackoverflow.com/questions/199333/how-do-i-detect-unsigned-integer-overflow
     for converting float to fraction I used this video to get insparation: https://www.youtube.com/watch?v=h3QFUCJ_blM&ab_channel=EricGitangu
+    and : https://www.baeldung.com/cs/float-to-fraction
 */
 
 namespace ariel {
