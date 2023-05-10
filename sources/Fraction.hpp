@@ -39,36 +39,46 @@ namespace ariel{
         // overloading of >> operator
         friend std::istream& operator>>(std::istream& _is, Fraction& fraction);
         
+
+
         // overloading the + opertor
         // using const where there is reference to Fraction object
         // because i don't want to modify the original frac1 and frac2
         // i need only to create a new Fraction object that represents their sum.
-        friend Fraction operator+(const Fraction& frac1, const Fraction& frac2);
+        Fraction operator+(const Fraction& frac) const;
         // Fraction + float
         friend Fraction operator+(const Fraction& frac, const float& flo);
         // float + Fraction 
         friend Fraction operator+(const float& flo, const Fraction& frac);
         
+
+
         // overloading the - operator
-        friend Fraction operator-(const Fraction& frac1, const Fraction& frac2);
+        Fraction operator-(const Fraction& frac) const;
         // Fraction - float
         friend Fraction operator-(const Fraction& frac, const float& flo);
         // float - Fraction
         friend Fraction operator-(const float& flo, const Fraction& frac);
 
+
+
         // overloading the / operator
-        friend Fraction operator/(const Fraction& frac1, const Fraction& frac2);
+        Fraction operator/(const Fraction& frac) const;
         // Fraction / float
         friend Fraction operator/(const Fraction& frac, const float& flo);
         // float / Fraction
         friend Fraction operator/(const float& flo, const Fraction& frac);
 
+
+
         // overloading the * operator
-        friend Fraction operator*(const Fraction& frac1, const Fraction& frac2);
+        Fraction operator*(const Fraction& frac) const;
         // float * Fraction
         friend Fraction operator*(const float& flo, const Fraction& frac);
         // Fraction * float 
         friend Fraction operator*(const Fraction& frac, const float& flo);    
+
+
 
         // overloading the ++ operator
         // pre-increment, example: ++n
@@ -76,37 +86,61 @@ namespace ariel{
         // post-increment, example: n++
         Fraction operator++(int);
 
+
+
         // overloading the -- operator
         // pre-decrement operator, example: --n
         Fraction& operator--();
         //post-decrement operator, example: n--
         Fraction operator--(int);
 
+
+
         // overloading the >= operator
-        friend bool operator>=(const Fraction& frac1, const Fraction& frac2); 
+        bool operator>=(const Fraction& frac) const; 
         friend bool operator>=(const float& flo, const Fraction& frac);
+        friend bool operator>=(const Fraction& frac, float& flo);
+
+
 
         // overloading the <= operator
-        friend bool operator<=(const Fraction& frac1, const Fraction& frac2);
+        bool operator<=(const Fraction& frac) const;
         friend bool operator<=(const float& flo, const Fraction& frac);
+        friend bool operator<=(const Fraction& frac, const float& flo);
+
 
         // overloading the > operator
-        friend bool operator>(const Fraction& frac1, const Fraction& frac2);
+        bool operator>(const Fraction& frac) const;
         friend bool operator>(const Fraction& frac, const float& flo);
         friend bool operator>(const float& flo, const Fraction& frac);
 
+
+
         // overloading the < operator
-        friend bool operator<(const Fraction& frac1, const Fraction& frac2);
+        bool operator<(const Fraction& frac) const;
         friend bool operator<(const float& flo, const Fraction& frac);
         friend bool operator<(Fraction& frac, const float& flo);
 
+
+
         // overloading the == operator
-        friend bool operator==(const Fraction& frac1, const Fraction& frac2);
+        bool operator==(const Fraction& frac) const;
         friend bool operator==(const float& flo, const Fraction& frac);
         friend bool operator==(Fraction& frac, const float& flo);
 
+
+
+        // overloading the != operator
+        bool operator!=(const Fraction& frac) const;
+        friend bool operator!=(const float& flo, const Fraction& frac);
+        friend bool operator!=(Fraction& frac, const float& flo);
+
+
+
         // function to get the GCD
         int getGCD(int first, int second);
+
+
 
         // function to get the LCM
         int getLCM(int first, int second);
