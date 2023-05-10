@@ -1,19 +1,33 @@
 #include "Fraction.hpp"
-
 #include <cmath> // for round
-using namespace std;
-#include <algorithm>
+#include <algorithm> // for gcd
 
-/*  Web sources:
-    for input output overloading i was inspired from: https://coding-champ.com/tutorials/c-plus-plus/operator-overloading-for-input-and-output
-    for overflow handeling (to pass the student's test): https://stackoverflow.com/questions/199333/how-do-i-detect-unsigned-integer-overflow
-    for converting float to fraction I used this video to get insparation: https://www.youtube.com/watch?v=h3QFUCJ_blM&ab_channel=EricGitangu
+using namespace std;
+
+/*                              WEB SOURCES
+    ======================================================================
+    for input output overloading i was inspired from: 
+    https://coding-champ.com/tutorials/c-plus-plus/operator-overloading-for-input-and-output
+    for overflow handeling (to pass the student's test): 
+    https://stackoverflow.com/questions/199333/how-do-i-detect-unsigned-integer-overflow
+    for converting float to fraction I used this video to get insparation: 
+    https://www.youtube.com/watch?v=h3QFUCJ_blM&ab_channel=EricGitangu
     and : https://www.baeldung.com/cs/float-to-fraction
+    ======================================================================
 */
 
 namespace ariel {
 
-    // implementation of the constructor
+
+    /*                          CONSTRUCTOR
+    ======================================================================
+            throwing exception when the denominator set to be 0
+            reducing the fraction using the gcd from algorithm library 
+            if the denominator received is negative i change it to be 
+            positive and multiply the numerator by -1
+    ======================================================================
+    */
+
     Fraction::Fraction(int numer, int denomi){
         
         if (denomi == 0) {
@@ -36,13 +50,47 @@ namespace ariel {
         this->denominator = denomi;
     }
 
-    // implementation of default constructor
+    /*                          CONSTRUCTOR
+    ======================================================================
+    */
+
+
+
+
+    /*                      DEFAULT CONSTRUCTOR 
+    ======================================================================
+    */
+
     Fraction::Fraction(){
         this->numerator = 0;
         this->denominator = 1;
     }
 
-    // implementation of the float to Fraction constructor
+    /*                      DEFAULT CONSTRUCTOR 
+    ======================================================================
+    */
+
+
+
+
+    /*                 FLOAT TO FRACTION CONSTRUCTOR
+    ======================================================================
+     implementation of the float to Fraction constructor
+     denominator set to 1 at the beginning
+     the float is rounded to accuracy of 3 digits
+     the counter used to not pass the limit of 3 digits
+     in the while loop at every iteration i increase the rounded float 
+     with mult of 10 and the denominator until the rounded float minus 
+     the integer casting of the founded float is equal to 0 and the 
+     counter is not 3
+     when the while ends the numerator of the new fraction will be 
+     the rounded form of the rounded float
+     rounding again to make sure the number is integer
+     and the denominator is set to be the denominator calculated 
+     during the while loop
+    ======================================================================
+    */
+
     Fraction::Fraction(float flo){
         int denominator = 1;
         
@@ -64,6 +112,16 @@ namespace ariel {
         
     }
 
+    /*                 FLOAT TO FRACTION CONSTRUCTOR
+    ======================================================================
+    */
+
+
+
+
+    /*                      GETTER AND SETTERS
+    ======================================================================
+    */
     // numerator getter
     int Fraction::getNumerator() const{
         return this->numerator;
@@ -83,8 +141,21 @@ namespace ariel {
     void Fraction::setDenomi(int n){
         this->denominator = n;
     }
+    /*                      GETTER AND SETTERS
+    ======================================================================
+    */
 
-    // implementation of the overloading of the operator << so it will print the fraction like this: 3/5
+
+
+
+    /*                       OVERLOADING OF <<
+    ======================================================================
+     implementation of the overloading of the operator << so it will 
+     print the fraction like this: 3/5
+     also reducing the fraction using gcd
+    ======================================================================
+    */
+
     ostream& operator<<(ostream& _os, const Fraction& fraction) {
         int gcd = __gcd(fraction.getNumerator(), fraction.getDenominator());
         int numer = fraction.getNumerator() / gcd;
@@ -101,7 +172,22 @@ namespace ariel {
         return _os;
     }
 
-    // implementation of the overloading of >> operator so it will read the input fraction like this: 3/5
+    /*                       OVERLOADING OF <<
+    ======================================================================
+    */
+
+
+
+
+    /*                       OVERLOADING OF >>
+    ======================================================================
+     implementation of the overloading of >> operator so it will read the 
+     input fraction like this: 3/5
+     throwing exceptions when the input invalid - only one number or not 
+     integers and when the denominator is 0
+    ======================================================================
+    */
+
     istream& operator>>(istream& _is, Fraction& fraction){
         _is >> fraction.numerator >> fraction.denominator;
 
@@ -116,19 +202,31 @@ namespace ariel {
         return _is;
     }
 
-    // implementation of the overloading of the + operator
-    Fraction operator+(const Fraction& frac1, const Fraction& frac2){
+    /*                       OVERLOADING OF >>
+    ======================================================================
+    */
+
+
+
+
+    /*                       OVERLOADING OF +
+    ======================================================================
+     implementation of the overloading of the + operator
+    ======================================================================
+    */
+
+    Fraction Fraction::operator+(const Fraction& frac) const{
         Fraction result;
 
         // Check for overflow in numerator
-        if (__builtin_add_overflow(frac1.getNumerator() * frac2.getDenominator(),
-                                    frac2.getNumerator() * frac1.getDenominator(),
+        if (__builtin_add_overflow(this->getNumerator() * frac.getDenominator(),
+                                    frac.getNumerator() * this->getDenominator(),
                                     &result.numerator)) {
             throw std::overflow_error("Overflow in numerator");
         }
 
         // Check for overflow in denominator
-        if (__builtin_mul_overflow(frac1.getDenominator(), frac2.getDenominator(), &result.denominator)) {
+        if (__builtin_mul_overflow(this->getDenominator(), frac.getDenominator(), &result.denominator)) {
             throw std::overflow_error("Overflow in denominator");
         }
 
@@ -139,29 +237,65 @@ namespace ariel {
         return result;
     }
 
-    // imlementation of the overloading of the operator + for Fraction + float
+    /*                       OVERLOADING OF +
+    ======================================================================
+    */
+
+
+
+
+    /*                 OVERLOADING OF FRACTION + FLOAT
+    ======================================================================
+    imlementation of the overloading of the operator + for Fraction + float
+    ======================================================================
+    */ 
+
     Fraction operator+(const Fraction& frac, const float& flo){
-        Fraction floatFrac(flo);
+        const Fraction floatFrac(flo);
         return frac + floatFrac;
     }
 
-    // imlementation of the overloading of the operator + for float + Fraction 
+    /*                 OVERLOADING OF FRACTION + FLOAT
+    ======================================================================
+    */ 
+
+
+
+
+    /*                 OVERLOADING OF FLOAT + FRACTION
+    ======================================================================
+    imlementation of the overloading of the operator + for float + Fraction
+    ======================================================================
+    */ 
+
     Fraction operator+(const float& flo, const Fraction& frac){
         Fraction floatFrac(flo);
         return floatFrac + frac;
     }
 
-    // implementation of the overloading of the - operator
-    Fraction operator-(const Fraction& frac1, const Fraction& frac2){
+    /*                 OVERLOADING OF FLOAT + FRACTION
+    ======================================================================
+    */
+
+
+
+
+    /*                       OVERLOADING OF -
+    ======================================================================
+    implementation of the overloading of the - operator
+    ======================================================================
+    */ 
+    
+    Fraction Fraction::operator-(const Fraction& frac) const{
         Fraction result;
     
         // Check for overflow in numerator
-        if (__builtin_sub_overflow(frac1.getNumerator() * frac2.getDenominator(), frac2.getNumerator() * frac1.getDenominator(), &result.numerator)) {
+        if (__builtin_sub_overflow(this->getNumerator() * frac.getDenominator(), frac.getNumerator() * this->getDenominator(), &result.numerator)) {
             throw std::overflow_error("Overflow in numerator");
         }
 
         // Check for overflow in denominator
-        if (__builtin_mul_overflow(frac1.getDenominator(), frac2.getDenominator(), &result.denominator)) {
+        if (__builtin_mul_overflow(this->getDenominator(), frac.getDenominator(), &result.denominator)) {
             throw std::overflow_error("Overflow in denominator");
         }
         
@@ -172,32 +306,68 @@ namespace ariel {
         return result;
     }
 
-    // implementation of the overloading of the - operator for Fraction - float
+    /*                       OVERLOADING OF -
+    ======================================================================
+    */ 
+
+
+
+
+    /*                       OVERLOADING OF FRACTION - FLOAT
+    ======================================================================
+    implementation of the overloading of the - operator for Fraction - float
+    ======================================================================
+    */ 
+    
     Fraction operator-(const Fraction& frac, const float& flo){
         Fraction floatFrac(flo); // convert float to fraction
         return frac - floatFrac;
     }
 
-    // implementation of the overloading of the - operator for float - Fraction
+    /*                       OVERLOADING OF FRACTION - FLOAT
+    ======================================================================
+    */ 
+
+
+
+
+    /*                       OVERLOADING OF FLOAT - FRACTION
+    ======================================================================
+    implementation of the overloading of the - operator for float - Fraction
+    ======================================================================
+    */
+     
     Fraction operator-(const float& flo, const Fraction& frac){
         Fraction floatFrac(flo); // convert float to fraction
         return floatFrac - frac;
     }
 
-    //implementation of the overloading of the / operator
-    Fraction operator/(const Fraction& frac1, const Fraction& frac2){
-        if (frac2.getNumerator() == 0) {
+    /*                       OVERLOADING OF FLOAT - FRACTION
+    ======================================================================
+    */
+
+
+
+
+    /*                       OVERLOADING OF /
+    ======================================================================
+    implementation of the overloading of the / operator
+    ======================================================================
+    */
+    
+    Fraction Fraction::operator/(const Fraction& frac) const{
+        if (frac.getNumerator() == 0) {
             throw runtime_error("Division by zero");
         }
         
         Fraction result;
         // Check for overflow in numerator
-        if (__builtin_mul_overflow(frac1.getNumerator(), frac2.getDenominator(), &result.numerator)) {
+        if (__builtin_mul_overflow(this->getNumerator(), frac.getDenominator(), &result.numerator)) {
             throw std::overflow_error("Overflow in numerator");
         }
 
         // Check for overflow in denominator
-        if (__builtin_mul_overflow(frac1.getDenominator(), frac2.getNumerator(), &result.denominator)) {
+        if (__builtin_mul_overflow(this->getDenominator(), frac.getNumerator(), &result.denominator)) {
             throw std::overflow_error("Overflow in denominator");
         }
 
@@ -208,7 +378,19 @@ namespace ariel {
         return result;
     }
 
-    // implementation of the overloading of the / operator for Fraction / float
+    /*                       OVERLOADING OF /
+    ======================================================================
+    */
+
+
+
+
+    /*                  OVERLOADING OF FRACTION / FLOAT
+    ======================================================================
+    implementation of the overloading of the / operator for Fraction / float
+    ======================================================================
+    */
+     
     Fraction operator/(const Fraction& frac, const float& flo){
         if (flo == 0) {
             throw runtime_error("Division by zero");
@@ -218,7 +400,19 @@ namespace ariel {
         return frac/floatFrac;
     }
 
-    // implementation of the overloading of the / operator for float / Fraction
+    /*                  OVERLOADING OF FRACTION / FLOAT
+    ======================================================================
+    */
+
+
+
+
+    /*                  OVERLOADING OF FLOAT / FRACTION
+    ======================================================================
+    implementation of the overloading of the / operator for float / Fraction
+    ======================================================================
+    */
+     
     Fraction operator/(const float& flo, const Fraction& frac){
 
         if (frac.getNumerator() == 0) {
@@ -229,17 +423,29 @@ namespace ariel {
         return floatFrac/frac;
     }
 
-    //implementation of the overloading of the * operator
-    Fraction operator*(const Fraction& frac1, const Fraction& frac2){
+    /*                  OVERLOADING OF FLOAT / FRACTION
+    ======================================================================
+    */
+
+
+
+
+    /*                          OVERLOADING OF *
+    ======================================================================
+    implementation of the overloading of the * operator
+    ======================================================================
+    */
+    
+    Fraction Fraction::operator*(const Fraction& frac) const{
         Fraction result;
         
         // Check for overflow in numerator
-        if (__builtin_mul_overflow(frac1.getNumerator(), frac2.getNumerator(), &result.numerator)) {
+        if (__builtin_mul_overflow(this->getNumerator(), frac.getNumerator(), &result.numerator)) {
             throw std::overflow_error("Overflow in numerator");
         }
 
         // Check for overflow in denominator
-        if (__builtin_mul_overflow(frac1.getDenominator(), frac2.getDenominator(), &result.denominator)) {
+        if (__builtin_mul_overflow(this->getDenominator(), frac.getDenominator(), &result.denominator)) {
             throw std::overflow_error("Overflow in denominator");
         }
 
@@ -250,19 +456,55 @@ namespace ariel {
         return result;
     }
 
-    // implementation of the overloading of the * operator for float * fraction
+    /*                          OVERLOADING OF *
+    ======================================================================
+    */
+
+
+
+
+    /*                  OVERLOADING OF FLOAT * FRACTION
+    ======================================================================
+    implementation of the overloading of the * operator for float * fraction
+    ======================================================================
+    */
+     
     Fraction operator*(const float& flo, const Fraction& frac){
         Fraction floatFrac(flo); // convert float to fraction
         return floatFrac*frac;
     }
 
-    // implementation of the overloading of the * operator for fraction * float
+    /*                  OVERLOADING OF FLOAT * FRACTION
+    ======================================================================
+    */
+
+
+
+
+    /*                  OVERLOADING OF FRACTION * FLOAT
+    ======================================================================
+    implementation of the overloading of the * operator for fraction * float
+    ======================================================================
+    */
+     
     Fraction operator*(const Fraction& frac, const float& flo){
         Fraction floatFrac(flo); // convert float to fraction
         return frac*floatFrac;
     }
 
-    // implementation for the prefix increment operator
+    /*                  OVERLOADING OF FRACTION * FLOAT
+    ======================================================================
+    */
+
+
+
+
+    /*                  OVERLOADING OF ++ PREFIX
+    ======================================================================
+    implementation for the prefix increment operator
+    ======================================================================
+    */
+     
     Fraction& Fraction::operator++(){
         int theNumer = this->getNumerator();
         int theDenomi = this->getDenominator();
@@ -270,10 +512,22 @@ namespace ariel {
         return *this;
     }
 
-    // implementation for the postfix increment operator
-    // the postfix increment operator should return the original value
-    // before it was incremented, 
-    // not the new value after the increment.
+    /*                  OVERLOADING OF ++ PREFIX
+    ======================================================================
+    */
+
+
+
+
+    /*                  OVERLOADING OF ++ POSTFIX
+    ======================================================================
+    implementation for the postfix increment operator
+    the postfix increment operator should return the original value
+    before it was incremented, 
+    not the new value after the increment.
+    ======================================================================
+    */
+     
     Fraction Fraction::operator++(int){
         Fraction temp(*this); 
         int theNumer = this->getNumerator();
@@ -282,7 +536,19 @@ namespace ariel {
         return temp; 
     }
 
-    // implementation for the pre-decrement operator
+    /*                  OVERLOADING OF ++ POSTFIX
+    ======================================================================
+    */
+
+
+
+
+    /*                  OVERLOADING OF -- PREFIX
+    ======================================================================
+    implementation for the pre-decrement operator
+    ======================================================================
+    */
+     
     Fraction& Fraction::operator--(){
         int theNumer = this->getNumerator();
         int theDenomi = this->getDenominator();
@@ -290,7 +556,19 @@ namespace ariel {
         return *this;
     }
 
-    // implementation for the post-decrement operator
+    /*                  OVERLOADING OF -- PREFIX
+    ======================================================================
+    */
+
+
+
+
+    /*                  OVERLOADING OF -- POSTFIX
+    ======================================================================
+    implementation for the post-decrement operator
+    ======================================================================
+    */
+     
     Fraction Fraction::operator--(int){
         Fraction temp(*this); 
         int theNumer = this->getNumerator();
@@ -299,42 +577,136 @@ namespace ariel {
         return temp; 
     }
 
-    // implementation for the >= operator
-    bool operator>=(const Fraction& frac1, const Fraction& frac2){
-        int num1 = frac1.getNumerator() * frac2.getDenominator();
-        int num2 = frac2.getNumerator() * frac1.getDenominator();
+    /*                  OVERLOADING OF -- POSTFIX
+    ======================================================================
+    */
+
+
+
+
+    /*                  OVERLOADING OF >=
+    ======================================================================
+    implementation for the >= operator
+    ======================================================================
+    */
+     
+    bool Fraction::operator>=(const Fraction& frac) const {
+        int num1 = this->getNumerator() * frac.getDenominator();
+        int num2 = frac.getNumerator() * this->getDenominator();
         return num1 >= num2;
     }
 
-    // implementation for the >= operator between float to fraction
+    /*                  OVERLOADING OF >=
+    ======================================================================
+    */
+
+
+
+    /*                  OVERLOADING OF FLOAT >= FRACTION
+    ======================================================================
+    implementation for the >= operator between float to fraction
+    ======================================================================
+    */
+     
     bool operator>=(const float& flo, const Fraction& frac){
         Fraction floatFrac(flo);
         return floatFrac >= frac;
     }
 
-    // implementation for overloading the <= operator
-    bool operator<=(const Fraction& frac1, const Fraction& frac2){
-        int num1 = frac1.getNumerator() * frac2.getDenominator();
-        int num2 = frac2.getNumerator() * frac1.getDenominator();
+    /*                  OVERLOADING OF FLOAT >= FRACTION
+    ======================================================================
+    */
+
+
+
+
+    /*                  OVERLOADING OF FRACTION >= FLOAT
+    ======================================================================
+    implementation for the >= operator between fraction to float
+    ======================================================================
+    */
+    bool operator>=(const Fraction& frac, float& flo){
+        Fraction floatFrac(flo);
+        return frac >= floatFrac;
+    }
+
+    /*                  OVERLOADING OF FRACTION >= FLOAT
+    ======================================================================
+    */
+
+
+
+
+    /*                  OVERLOADING OF <=
+    ======================================================================
+    implementation for overloading the <= operator
+    ======================================================================
+    */
+     
+    bool Fraction::operator<=(const Fraction& frac) const{
+        int num1 =  this->getNumerator() * frac.getDenominator();
+        int num2 = frac.getNumerator() * this->getDenominator();
         return num1 <= num2;
     }
 
-    // implementation for overloading the <= operator between float to fraction
+    /*                  OVERLOADING OF <=
+    ======================================================================
+    */
+
+
+
+
+    /*                  OVERLOADING OF FLOAT <= FRACTION
+    ======================================================================
+    implementation for overloading the <= operator between float to fraction
+    ======================================================================
+    */
+     
     bool operator<=(const float& flo, const Fraction& frac){
         Fraction floatFrac(flo);
         return floatFrac <= frac;
     }
 
-    // implementation for the > operator
-    bool operator>(const Fraction& frac1, const Fraction& frac2){
+    /*                  OVERLOADING OF FLOAT <= FRACTION
+    ======================================================================
+    */
 
-        int numer1 = frac1.getNumerator();
-        int denomi1 = frac1.getDenominator();
+
+
+
+    /*                  OVERLOADING OF FRACTION <= FLOAT
+    ======================================================================
+    implementation for overloading the <= operator between fraction to float
+    ======================================================================
+    */
+
+    bool operator<=(const Fraction& frac, const float& flo){
+        Fraction floatFrac(flo);
+        return frac <= floatFrac;
+    }
+
+    /*                  OVERLOADING OF FRACTION <= FLOAT
+    ======================================================================
+    */
+
+   
+
+
+    /*                  OVERLOADING OF >
+    ======================================================================
+    implementation for the > operator
+    ======================================================================
+    */
+    
+    bool Fraction::operator>(const Fraction& frac) const{
+
+        int numer1 = this->getNumerator();
+        int denomi1 = this->getDenominator();
         int gcd = __gcd(numer1, denomi1);
         Fraction frac1_reduced(numer1/gcd,denomi1/gcd);
 
-        int numer2 = frac2.getNumerator();
-        int denomi2 = frac2.getDenominator();
+        int numer2 = frac.getNumerator();
+        int denomi2 = frac.getDenominator();
         int gcd2 = __gcd(numer2, denomi2);
         Fraction frac2_reduced(numer2/gcd2,denomi2/gcd2);
 
@@ -345,27 +717,63 @@ namespace ariel {
         return num1 > num2;
     }
 
-    // implementation for the > operator between fraction to float
+    /*                  OVERLOADING OF >
+    ======================================================================
+    */
+
+
+
+
+    /*                  OVERLOADING OF FRACTION > FLOAT
+    ======================================================================
+    implementation for the > operator between fraction to float
+    ======================================================================
+    */
+     
     bool operator>(const Fraction& frac, const float& flo){
         Fraction floatFrac(flo);
         return frac.getNumerator() * floatFrac.getDenominator() > floatFrac.getNumerator() * frac.getDenominator();
     }
 
-    // implementation for the > operator between float to fraction
+    /*                  OVERLOADING OF FRACTION > FLOAT
+    ======================================================================
+    */
+
+
+
+
+    /*                  OVERLOADING OF FLOAT > FRACTION
+    ======================================================================
+    implementation for the > operator between float to fraction
+    ======================================================================
+    */
+     
     bool operator>(const float& flo, const Fraction& frac){
         Fraction floatFrac(flo);
         return floatFrac > frac;
     }
 
-    // implementation for the < operator
-    bool operator<(const Fraction& frac1, const Fraction& frac2){
-        int numer1 = frac1.getNumerator();
-        int denomi1 = frac1.getDenominator();
+    /*                  OVERLOADING OF FLOAT > FRACTION
+    ======================================================================
+    */
+
+
+
+
+    /*                  OVERLOADING OF <
+    ======================================================================
+    implementation for the < operator
+    ======================================================================
+    */
+     
+    bool Fraction::operator<(const Fraction& frac) const{
+        int numer1 = this->getNumerator();
+        int denomi1 = this->getDenominator();
         int gcd = __gcd(numer1, denomi1);
         Fraction frac1_reduced(numer1/gcd,denomi1/gcd);
 
-        int numer2 = frac2.getNumerator();
-        int denomi2 = frac2.getDenominator();
+        int numer2 = frac.getNumerator();
+        int denomi2 = frac.getDenominator();
         int gcd2 = __gcd(numer2, denomi2);
         Fraction frac2_reduced(numer2/gcd2,denomi2/gcd2);
 
@@ -376,39 +784,173 @@ namespace ariel {
         return num1 < num2;
     }
 
-    // implementation for the < operator between float to fraction : float < fraction
+    /*                  OVERLOADING OF <
+    ======================================================================
+    */
+
+
+
+
+    /*                  OVERLOADING OF FLOAT < FRACTION
+    ======================================================================
+    implementation for the < operator 
+    between float to fraction : float < fraction
+    ======================================================================
+    */
+     
     bool operator<(const float& flo, const Fraction& frac){
         Fraction floatFrac(flo);
         return floatFrac < frac;
     }
 
-    // implementation for the < operator between fraction to float : fraction < float
+    /*                  OVERLOADING OF FLOAT < FRACTION
+    ======================================================================
+    */
+
+
+
+
+    /*                  OVERLOADING OF FRACTION < FLOAT
+    ======================================================================
+    implementation for the < operator 
+    between fraction to float : fraction < float
+    ======================================================================
+    */
+     
     bool operator<(Fraction& frac, const float& flo){
         Fraction floatFrac(flo);
         return frac < floatFrac;
     }
 
-    // implementation for the == operator
-    bool operator==(const Fraction& frac1, const Fraction& frac2){
-        int numer1 = frac1.getNumerator() * frac2.getDenominator();
-        int numer2 = frac2.getNumerator() * frac1.getDenominator();
+    /*                  OVERLOADING OF FRACTION < FLOAT
+    ======================================================================
+    */
+
+
+
+
+    /*                  OVERLOADING OF ==
+    ======================================================================
+    implementation for the == operator
+    ======================================================================
+    */
+    
+    bool Fraction::operator==(const Fraction& frac) const{
+        int numer1 = this->getNumerator() * frac.getDenominator();
+        int numer2 = frac.getNumerator() * this->getDenominator();
 
         if (numer1 > numer2) return false;
         else if (numer1 < numer2) return false;
         else return true;
     }
 
+    /*                  OVERLOADING OF ==
+    ======================================================================
+    */
+
+
+
+
+    /*                  OVERLOADING OF FLOAT == FRACTION
+    ======================================================================
+    implementation for the == operator
+    float == fraction
+    ======================================================================
+    */
     bool operator==(const float& flo, const Fraction& frac){
         Fraction floatFrac(flo);
         return floatFrac == frac;
     }
 
+    /*                  OVERLOADING OF FLOAT == FRACTION
+    ======================================================================
+    */
+
+
+
+
+    /*                  OVERLOADING OF FRACTION == FLOAT
+    ======================================================================
+    implementation for the == operator
+    fraction == float
+    ======================================================================
+    */
     bool operator==(Fraction& frac, const float& flo){
         Fraction floatFrac(flo);
         return frac == floatFrac;
     }
 
-    // implementation to find the Greatest Common Divisor (GCD) of two integers using the Euclidean algorithm
+    /*                  OVERLOADING OF FRACTION == FLOAT
+    ======================================================================
+    */
+
+
+
+
+    /*                          OVERLOADING OF !=
+    ======================================================================
+    implementation for the != operator
+    using the == operator overloading
+    *this is a pointer to the current object being operated on 
+    by the member function.
+    ======================================================================
+    */
+
+    bool Fraction::operator!=(const Fraction& frac) const{
+        return !(*this == frac);
+    }
+
+    /*                          OVERLOADING OF !=
+    ======================================================================
+    */
+
+
+
+
+    /*                  OVERLOADING OF FLOAT != FRACTION
+    ======================================================================
+    implementation for the != operator
+    float != fraction
+    using the == operator overloading
+    ======================================================================
+    */
+
+    bool operator!=(const float& flo, const Fraction& frac){
+        return !(flo == frac);
+    }
+
+    /*                  OVERLOADING OF FLOAT != FRACTION
+    ======================================================================
+    */
+
+
+
+
+    /*                  OVERLOADING OF FRACTION != FLOAT
+    ======================================================================
+    implementation for the != operator
+    fraction != float
+    using the == operator overloading
+    ======================================================================
+    */
+
+    bool operator!=(Fraction& frac, const float& flo){
+        return !(frac == flo);
+    }
+
+    /*                  OVERLOADING OF FRACTION != FLOAT
+    ======================================================================
+    */
+
+
+
+    /*                              GCD
+    ======================================================================
+    implementation to find the Greatest Common Divisor (GCD) 
+    of two integers using the Euclidean algorithm
+    ======================================================================
+    */
+     
     int Fraction::getGCD(int first, int second){
         while (second != 0){
             int temp = second;
@@ -418,7 +960,25 @@ namespace ariel {
         return first;
     }
 
+    /*                              GCD
+    ======================================================================
+    */
+
+
+
+
+    /*                              LCM
+    ======================================================================
+    implementation to find the Least Common Multiple (LCM) 
+    of two integers using the gcd
+    ======================================================================
+    */
+
     int Fraction::getLCM(int first, int second){
         return (first * second) / getGCD(first, second);
     }
+
+    /*                              LCM
+    ======================================================================
+    */
 }
